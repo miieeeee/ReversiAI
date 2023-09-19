@@ -412,7 +412,7 @@ function pauseInterval(){
 function playInterval(state){
     iv_id = setInterval(() => {
         state.showBoard();
-        if(state.turn == 1){
+        if(state.turn != myTurn){
             pauseInterval();
             runAI(state);
             playInterval(state);
