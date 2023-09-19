@@ -12,6 +12,7 @@ const scoreBoard = [
     [10,-5,0,0,0,0,-5,10]
 ];
 const myTurn = 0;
+let lastHand = [-1,-1];
 let iv_id;
 class State{
     turn = 0;
@@ -28,6 +29,7 @@ class State{
                 this.state[i][j] = 3;
             }
         }
+        document.querySelector(".turn").textContent = "あなたの番です";
         this.makeStones();
         this.setInitialStones();
         this.legalActions();
@@ -70,6 +72,8 @@ class State{
         target_stone.classList.remove(`board-stone-${stone_colors[(color+2)%4]}`);
         target_stone.classList.remove(`board-stone-${stone_colors[(color+3)%4]}`);
         target_stone.classList.add(`board-stone-${stone_colors[color]}`);
+        if(lastHand[0] == x && lastHand[1] == y) target_stone.classList.add('board-stone-last');
+        else target_stone.classList.remove('board-stone-last');
     }
     checkFlip(x,y){
         let cnt_flip = 0;
@@ -92,8 +96,11 @@ class State{
     }
     changeTurn(){
         (this.turn==0) ? this.turn= 1 : this.turn=0;
+        if(this.turn == myTurn) document.querySelector(".turn").textContent = "あなたの番です";
+        else document.querySelector(".turn").textContent = "AIの番です";
     }
     putStone(pos){
+        lastHand = pos;
         let [x,y] = pos;
         let flip_stones = this.checkFlip(x,y);
         if(flip_stones.length == 0) return;
@@ -411,15 +418,16 @@ function pauseInterval(){
 }
 function playInterval(state){
     iv_id = setInterval(() => {
-        state.showBoard();
         if(state.turn == 1){
+            state.showBoard();
             pauseInterval();
             new Promise((resolve) => {
                 setTimeout(() => {
                     runAI(state);
+                    resolve();
                 },100);
-                resolve();
             }).then(() => {
+                state.showBoard();
                 playInterval(state);
             });
         }
