@@ -412,10 +412,16 @@ function pauseInterval(){
 function playInterval(state){
     iv_id = setInterval(() => {
         state.showBoard();
-        if(state.turn != myTurn){
+        if(state.turn == 1){
             pauseInterval();
-            runAI(state);
-            playInterval(state);
+            new Promise((resolve) => {
+                setTimeout(() => {
+                    runAI(state);
+                },100);
+                resolve();
+            }).then(() => {
+                playInterval(state);
+            });
         }
         if(state.isDone()){
             state.showResult();
