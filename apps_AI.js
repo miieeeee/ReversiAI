@@ -1,6 +1,3 @@
-//const { toPlainObject } = require("lodash");
-
-// import _ from 'lodash';
 const stone_colors = ["black","white","red","green"];
 const DX = [0,1,0,-1,1,1,-1,-1];
 const DY = [1,0,-1,0,1,-1,1,-1];
@@ -14,6 +11,8 @@ const scoreBoard = [
     [-5,-8,0,0,0,0,-8,-5],
     [10,-5,0,0,0,0,-5,10]
 ];
+const myTurn = 0;
+let iv_id;
 class State{
     turn = 0;
     cnt_black = 2;
@@ -115,12 +114,11 @@ class State{
         this.cnt_white = 0,this.cnt_black = 0;
         for(let i=0;i<this.size;i++){
             for(let j=0;j<this.size;j++){
-                if(this.state[i][j] == 0) this.cnt_white++;
-                if(this.state[i][j] == 1) this.cnt_black++;
+                if(this.state[i][j] == 1) this.cnt_white++;
+                if(this.state[i][j] == 0) this.cnt_black++;
             }
         }
         if(this.cnt_white+this.cnt_black == this.size * this.size || this.cnt_white * this.cnt_black == 0){
-            console.log("done");
             return true;
         }
         else return false;
@@ -134,9 +132,6 @@ class State{
     }
     showResult(){
         let board_background = document.querySelector(".board-background");
-        while(board_background.firstChild){
-            board_background.removeChild(board_background.firstChild);
-        }
         let result_content = document.createElement("h2");
         result_content.textContent = `${this.cnt_white} - ${this.cnt_black} \n`;
         if(this.cnt_white > this.cnt_black) result_content.textContent += "winner : white";
@@ -403,47 +398,35 @@ function miniMaxAction(state,depth){
 }
 
 
-function playGame(){
-    let state = new State(8);
-    state.showBoard();
-    setInterval(() => {
+function runAI(state){
+    let action;
+    console.log(Date());
+    if(state.cnt_white + state.cnt_black >= 54)action = miniMaxAction(state,10);
+    else action = miniMaxAction(state,4);
+    console.log(action);
+    state.putStone(action);
+}
+function pauseInterval(){
+    clearInterval(iv_id);
+}
+function playInterval(state){
+    iv_id = setInterval(() => {
         state.showBoard();
-        if(state.turn == 0){
-            state.showBoard();
-            // console.log("hi");
-            let action;
-            if(state.cnt_white + state.cnt_black >= 54)action = miniMaxAction(state,10);
-            else action = miniMaxAction(state,4);
-            console.log(action);
-            state.putStone(action);
+        if(state.turn == 1){
+            pauseInterval();
+            runAI(state);
+            playInterval(state);
         }
         if(state.isDone()){
             state.showResult();
+            clearInterval(iv_id);
         }
-    },100)
-    // while(!state.isDone()){
-    //     if(state.turn == 1){
-    //         console.log("hi");
-    //         state.putStone(miniMaxAction(state,4));
-    //     }
-    // }
+    },100);
+}
+function playGame(){
+    let state = new State(8);
+    state.showBoard();
+    playInterval(state);
 }
 
-// function test(){
-//     let state = new State(8);
-//     state.state = [
-//         [1,0,0,0,0,0,0,0],
-//         [2,2,2,2,2,2,2,2],
-//         [2,2,2,2,2,2,2,2],
-//         [2,2,2,2,2,2,2,2],
-//         [2,2,2,2,2,2,2,2],
-//         [2,2,2,2,2,2,2,2],
-//         [2,2,2,2,2,2,2,2],
-//         [2,2,2,2,2,2,2,2]
-//     ]
-//     console.log(state.getScore());
-//     state.changeTurn();
-//     console.log(state.getScore());
-// }
-// test();
 playGame();
