@@ -1,0 +1,43 @@
+.board-background{
+    margin: 0 auto;
+    width: min(90vh,90vw);
+    height: min(90vh,90vw);
+    min-width: 300px;
+    min-height: 300px;
+    background-color: green;
+}
+.board-row{
+    display: flex;
+    width: 100%;
+}
+.board-grid{
+    border: 1px solid black;
+    height: 100%;
+}
+.board-stone{
+    display: block;
+    padding: 0;
+    margin: 10% auto 10%;
+    background-color: green;
+    height: 80%;
+    width: 80%;
+    border-radius: 50%;
+}
+.board-stone-white{
+    background-color: white;
+}
+.board-stone-black{
+    background-color: black;
+}
+.board-stone-red{
+    background-color: rgb(202, 52, 52);
+    opacity: 70%;
+}
+.board-result{
+    margin: auto;
+}
+.board-result-content{
+    margin: auto;
+    font-size: 2rem;
+    text-align: center;
+}
