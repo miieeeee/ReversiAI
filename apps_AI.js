@@ -1,3 +1,7 @@
+//const { toPlainObject } = require("lodash");
+
+
+// import _ from 'lodash';
 const stone_colors = ["black","white","red","green"];
 const DX = [0,1,0,-1,1,1,-1,-1];
 const DY = [1,0,-1,0,1,-1,1,-1];
@@ -441,6 +445,4 @@ function playGame(){
     let state = new State(8);
     state.showBoard();
     playInterval(state);
-}
-
 playGame();
