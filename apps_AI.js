@@ -1,7 +1,3 @@
-//const { toPlainObject } = require("lodash");
-
-
-// import _ from 'lodash';
 const stone_colors = ["black","white","red","green"];
 const DX = [0,1,0,-1,1,1,-1,-1];
 const DY = [1,0,-1,0,1,-1,1,-1];
@@ -17,6 +13,7 @@ const scoreBoard = [
 ];
 const myTurn = 0;
 let lastHand = [-1,-1];
+let prepared = false;
 let iv_id;
 class State{
     noHandFlag = false;
@@ -115,6 +112,7 @@ class State{
         }
 
         // console.log(this.state);
+        prepared = true;
         this.changeTurn();
         this.legalActions();
         if(this.legal_actions.length == 0){
@@ -122,6 +120,7 @@ class State{
             this.legalActions();
         }
         if(this.legal_actions.length == 0) this.noHandFlag = true;
+        prepared = false;
     }
     isDone(){
         this.cnt_white = 0,this.cnt_black = 0;
@@ -373,7 +372,7 @@ class State{
 
 function miniMaxScore(state,depth){
     if(state.isDone()){
-        if(this.turn == 0) return state.cnt_black;
+        if(state.turn == 0) return state.cnt_black;
         else return state.cnt_white;
     }
     if(depth == 0){
@@ -426,7 +425,8 @@ function pauseInterval(){
 }
 function playInterval(state){
     iv_id = setInterval(() => {
-        if(state.turn == 1){
+        if(state.turn != myTurn && !prepared){
+            console.log("runAI");
             state.showBoard();
             pauseInterval();
             new Promise((resolve) => {
@@ -440,6 +440,7 @@ function playInterval(state){
             });
         }
         if(state.isDone()){
+            state.showBoard();
             state.showResult();
             clearInterval(iv_id);
         }
