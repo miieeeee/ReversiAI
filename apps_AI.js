@@ -445,4 +445,5 @@ function playGame(){
     let state = new State(8);
     state.showBoard();
     playInterval(state);
+}
 playGame();
