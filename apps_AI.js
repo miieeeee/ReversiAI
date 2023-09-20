@@ -19,6 +19,7 @@ const myTurn = 0;
 let lastHand = [-1,-1];
 let iv_id;
 class State{
+    noHandFlag = false;
     turn = 0;
     cnt_black = 2;
     cnt_white = 2;
@@ -120,16 +121,18 @@ class State{
             this.changeTurn();
             this.legalActions();
         }
+        if(this.legal_actions.length == 0) this.noHandFlag = true;
     }
     isDone(){
         this.cnt_white = 0,this.cnt_black = 0;
+        
         for(let i=0;i<this.size;i++){
             for(let j=0;j<this.size;j++){
                 if(this.state[i][j] == 1) this.cnt_white++;
                 if(this.state[i][j] == 0) this.cnt_black++;
             }
         }
-        if(this.cnt_white+this.cnt_black == this.size * this.size || this.cnt_white * this.cnt_black == 0){
+        if(this.cnt_white+this.cnt_black == this.size * this.size || this.cnt_white * this.cnt_black == 0 || this.noHandFlag){
             return true;
         }
         else return false;
@@ -142,6 +145,7 @@ class State{
         }
     }
     showResult(){
+        document.querySelector(".turn").textContent = "";
         let board_background = document.querySelector(".board-background");
         let result_content = document.createElement("h2");
         result_content.textContent = `${this.cnt_white} - ${this.cnt_black} \n`;
