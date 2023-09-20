@@ -403,6 +403,7 @@ function miniMaxAction(state,depth){
         let next_state = _.cloneDeep(state);
         next_state.putStone(pos);
         let score = -miniMaxScore(next_state,depth);
+        if(state.turn == next_state.turn) score *= -1;
         if(score > best_score){
             best_action = pos;
             best_score = score;
