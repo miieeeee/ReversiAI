@@ -1,3 +1,7 @@
+//const { toPlainObject } = require("lodash");
+
+
+// import _ from 'lodash';
 const stone_colors = ["black","white","red","green"];
 const DX = [0,1,0,-1,1,1,-1,-1];
 const DY = [1,0,-1,0,1,-1,1,-1];
@@ -11,7 +15,7 @@ const scoreBoard = [
     [-5,-8,0,0,0,0,-8,-5],
     [10,-5,0,0,0,0,-5,10]
 ];
-const myTurn = 0;
+const myTurn = 1;
 let lastHand = [-1,-1];
 let prepared = false;
 let iv_id;
@@ -370,7 +374,7 @@ class State{
     }
 }
 
-function miniMaxScore(state,depth){
+function miniMaxScore(state,depth,limit){
     if(state.isDone()){
         if(state.turn == 0) return state.cnt_black;
         else return state.cnt_white;
@@ -386,9 +390,14 @@ function miniMaxScore(state,depth){
     for (const pos of legal_actions) {
         let next_state = _.cloneDeep(state);
         next_state.putStone(pos);
-        let score = -miniMaxScore(next_state,depth-1);
+        let mul = -1;
+        if(state.turn == next_state.turn) mul = 1;
+        let score = mul * miniMaxScore(next_state,depth-1,mul * bestScore);
         if(score > bestScore){
             bestScore = score;
+        }
+        if(bestScore >= limit){
+            return bestScore;
         }
     }
 
@@ -402,8 +411,9 @@ function miniMaxAction(state,depth){
     for (const pos of legal_actions) {
         let next_state = _.cloneDeep(state);
         next_state.putStone(pos);
-        let score = -miniMaxScore(next_state,depth);
-        if(state.turn == next_state.turn) score *= -1;
+        let mul = -1;
+        if(state.turn == next_state.turn) mul = 1;
+        let score = mul * miniMaxScore(next_state,depth-1,mul * best_score);
         if(score > best_score){
             best_action = pos;
             best_score = score;
@@ -417,7 +427,7 @@ function runAI(state){
     let action;
     console.log(Date());
     if(state.cnt_white + state.cnt_black >= 54)action = miniMaxAction(state,10);
-    else action = miniMaxAction(state,4);
+    else action = miniMaxAction(state,6);
     console.log(action);
     state.putStone(action);
 }
@@ -426,6 +436,12 @@ function pauseInterval(){
 }
 function playInterval(state){
     iv_id = setInterval(() => {
+        state.showBoard();
+        if(state.isDone()){
+            state.showBoard();
+            state.showResult();
+            clearInterval(iv_id);
+        }
         if(state.turn != myTurn && !prepared){
             console.log("runAI");
             state.showBoard();
@@ -439,11 +455,6 @@ function playInterval(state){
                 state.showBoard();
                 playInterval(state);
             });
-        }
-        if(state.isDone()){
-            state.showBoard();
-            state.showResult();
-            clearInterval(iv_id);
         }
     },100);
 }
